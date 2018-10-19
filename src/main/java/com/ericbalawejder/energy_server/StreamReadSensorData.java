@@ -24,7 +24,7 @@ public class StreamReadSensorData {
         double energy = energyMetered(jsonParser, sensorReading, 1234, 5678);
         double units = kilowattHour(energy);
         System.out.println(String.format("%.3f", units));
-        System.out.println(sensorReading);
+        //System.out.println(sensorReading);
         jsonParser.close();
 
     }
