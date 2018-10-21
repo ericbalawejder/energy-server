@@ -1,6 +1,6 @@
 package com.ericbalawejder.jackson.model;
 
-// SensorReading object represents an individual Json object reading.
+// SensorReading object represents an individual JSON object reading.
 public class SensorReading {
 
     // Seconds

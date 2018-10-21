@@ -22,9 +22,8 @@ public class StreamReadSensorData {
         // Loop through the tokens.
         SensorReading sensorReading = new SensorReading();
         double energy = energyMetered(jsonParser, sensorReading, 1234, 5678);
-        double units = kilowattHour(energy);
-        System.out.println(String.format("%.3f", units));
         //System.out.println(sensorReading);
+        kilowattHour(energy);
         jsonParser.close();
 
     }
@@ -61,22 +60,21 @@ public class StreamReadSensorData {
         return sum;
     }
 
-    private static double kilowattHour(double value) {
-        return (1.0 / 3600) * value;
+    private static void kilowattHour(double value) {
+        double kWh = (1.0 / 3600) * value;
+        System.out.println("energy: " + String.format("%.3f", kWh) + ", units: kWh");
     }
 
-    private static double joules(double value) {
+    private static void joules(double value) {
         // Place conversion here
-        return value;
     }
 
-    private static double wattHour(double value) {
+    private static void wattHour(double value) {
         // Place conversion here
-        return value;
+        // (5.0 / 18) * value
     }
 
-    private static double electronVolt(double value) {
+    private static void electronVolt(double value) {
         // Place conversion here
-        return value;
     }
 }
