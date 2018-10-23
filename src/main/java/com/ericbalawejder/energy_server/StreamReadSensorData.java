@@ -16,12 +16,29 @@ public class StreamReadSensorData {
 
     public static void main(String[] args) throws JsonParseException, IOException {
 
+        if (args.length != 2) {
+            System.out.println("Requires two arguments, start and end.");
+            System.exit(1);
+        }
+
+        int start = 0;
+        int end = 0;
+        
+        try {
+            start = Integer.parseInt(args[0]);
+            end = Integer.parseInt(args[1]);
+        }
+        catch (NumberFormatException e) {
+            System.out.println("The arguments must be positive integers.");
+            System.exit(1);
+        }
+
         // Create JsonParser object.
         JsonParser jsonParser = new JsonFactory().createParser(new File("sensors.json"));
 
         // Loop through the tokens.
         SensorReading sensorReading = new SensorReading();
-        double energy = energyMetered(jsonParser, sensorReading, 1234, 5678);
+        double energy = energyMetered(jsonParser, sensorReading, start, end);
         // System.out.println(sensorReading);
         kilowattHour(energy);
         jsonParser.close();
