@@ -22,14 +22,12 @@ public class StreamReadSensorData {
         // Loop through the tokens.
         SensorReading sensorReading = new SensorReading();
         double energy = energyMetered(jsonParser, sensorReading, 1234, 5678);
-        //System.out.println(sensorReading);
+        // System.out.println(sensorReading);
         kilowattHour(energy);
         jsonParser.close();
-
     }
 
-    private static double energyMetered(
-            JsonParser jsonParser, SensorReading sensor, int start, int end)
+    private static double energyMetered(JsonParser jsonParser, SensorReading sensor, int start, int end)
             throws JsonParseException, IOException {
 
         double sum = 0;
@@ -53,7 +51,6 @@ public class StreamReadSensorData {
                     volts = sensor.getVoltage();
                     amps = sensor.getCurrent();
                     sum += (volts * amps) / 1000.0;
-
                 }
             }
         }
