@@ -10,10 +10,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import org.hibernate.validator.constraints.NotEmpty;
-
 import com.ericbalawejder.jackson.model.SensorReading;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
@@ -22,64 +19,11 @@ import com.fasterxml.jackson.core.JsonToken;
 @Path("/")
 @Produces(MediaType.APPLICATION_JSON)
 public class EnergyResource {
-    public class CalculationResult {
-        @NotEmpty
-        private Double energy;
-
-        @NotEmpty
-        private String units;
-
-        public CalculationResult(Double energy, String units) {
-            this.energy = Math.round(energy * 1000) / 1000.0d;
-            this.units = units;
-        }
-
-        @JsonProperty
-        public Double getEnergy() {
-            // round?
-            return energy;
-        }
-
-        @JsonProperty
-        public void setEnergy(Double energy) {
-            this.energy = energy;
-        }
-
-        @JsonProperty
-        public String getUnits() {
-            return units;
-        }
-
-        @JsonProperty
-        public void setUnits(String units) {
-            this.units = units;
-        }
-
-    }
-
-    public class ApiResponse {
-        @NotEmpty
-        private CalculationResult results;
-
-        public ApiResponse(CalculationResult calc) {
-            this.results = calc;
-        }
-
-        @JsonProperty
-        public CalculationResult getResults() {
-            return results;
-        }
-
-        @JsonProperty
-        public void setResults(CalculationResult results) {
-            this.results = results;
-        }
-
-    }
 
     @POST
     public ApiResponse getEnergyUsage(@FormParam("starttime") Optional<Integer> startTime,
             @FormParam("endtime") Optional<Integer> endTime) {
+
         try {
             if (!startTime.isPresent()) {
                 throw new RuntimeException("starttime parameter is required");
@@ -87,6 +31,7 @@ public class EnergyResource {
             if (!endTime.isPresent()) {
                 throw new RuntimeException("endtime parameter is required");
             }
+
             Integer start = startTime.get();
             Integer end = endTime.get();
 
@@ -100,11 +45,15 @@ public class EnergyResource {
             CalculationResult calculated = kilowattHour(energy);
             jsonParser.close();
             return new ApiResponse(calculated);
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
+    // Stream JSON file to handle huge input or slow connection. In this case the JSON needs 
+    // to be read as it comes from input part by part. The side effect is that you are able 
+    // to read corrupted JSON arrays in some kind of comfortable way.
     private double energyMetered(JsonParser jsonParser, SensorReading sensor, int start, int end)
             throws JsonParseException, IOException {
 
@@ -135,24 +84,27 @@ public class EnergyResource {
         return sum;
     }
 
-    // Make parameter for units in energyMetered.
+    // TODO Make parameter for units in energyMetered.
     private CalculationResult kilowattHour(double value) {
         double kWh = (1.0 / 3600) * value;
-        // {"results":{"energy":307.668,"units":"kWh"}}
-        // String stringValue = "{\"results\":{\"energy\":" + String.format("%.3f", kWh)
-        // + ",\"units\":\"kWh\"}}\n";
-        // return stringValue;
         return new CalculationResult(kWh, "kWh");
     }
 
     /*
-     * private CalculationResult joules(double value) { // Place conversion here
-     * return }
-     * 
-     * private CalculationResult wattHour(double value) { // Place conversion here
-     * // (5.0 / 18) * value return }
-     * 
-     * private CalculationResult electronVolt(double value) { // Place conversion
-     * here return }
+     private CalculationResult joules(double value) {
+         double joules = Place conversion here
+         return new CalculationResult(joules, "joules");
+     }
+     
+     private CalculationResult wattHour(double value) {
+         // Place conversion here
+         double wattHour = (5.0 / 18) * value;
+         return new CalculationResult(wattHour, "wattHour");
+     }
+     
+     private CalculationResult electronVolt(double value) {
+         double EV = Place conversion here
+         return new CalculationResult(EV, "EV");
+     }
      */
 }
