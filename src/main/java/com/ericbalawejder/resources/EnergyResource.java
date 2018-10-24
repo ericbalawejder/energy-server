@@ -10,7 +10,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import org.hibernate.validator.constraints.NotEmpty;
+
 import com.ericbalawejder.jackson.model.SensorReading;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
@@ -19,9 +22,63 @@ import com.fasterxml.jackson.core.JsonToken;
 @Path("/")
 @Produces(MediaType.APPLICATION_JSON)
 public class EnergyResource {
+    public class CalculationResult {
+        @NotEmpty
+        private Double energy;
+
+        @NotEmpty
+        private String units;
+
+        public CalculationResult(Double energy, String units) {
+            this.energy = Math.round(energy * 1000) / 1000.0d;
+            this.units = units;
+        }
+
+        @JsonProperty
+        public Double getEnergy() {
+            // round?
+            return energy;
+        }
+
+        @JsonProperty
+        public void setEnergy(Double energy) {
+            this.energy = energy;
+        }
+
+        @JsonProperty
+        public String getUnits() {
+            return units;
+        }
+
+        @JsonProperty
+        public void setUnits(String units) {
+            this.units = units;
+        }
+
+    }
+
+    public class ApiResponse {
+        @NotEmpty
+        private CalculationResult results;
+
+        public ApiResponse(CalculationResult calc) {
+            this.results = calc;
+        }
+
+        @JsonProperty
+        public CalculationResult getResults() {
+            return results;
+        }
+
+        @JsonProperty
+        public void setResults(CalculationResult results) {
+            this.results = results;
+        }
+
+    }
 
     @POST
-    public String getEnergyUsage(@FormParam("starttime") Optional<Integer> startTime,
+    public ApiResponse getEnergyUsage(@FormParam("starttime") Optional<Integer> startTime,
             @FormParam("endtime") Optional<Integer> endTime) {
         try {
             if (!startTime.isPresent()) {
@@ -40,9 +97,9 @@ public class EnergyResource {
             SensorReading sensorReading = new SensorReading();
             double energy = energyMetered(jsonParser, sensorReading, start, end);
             // System.out.println(sensorReading);
-            String calculated = kilowattHour(energy);
+            CalculationResult calculated = kilowattHour(energy);
             jsonParser.close();
-            return calculated;
+            return new ApiResponse(calculated);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -78,27 +135,24 @@ public class EnergyResource {
         return sum;
     }
 
-    private String kilowattHour(double value) {
+    // Make parameter for units in energyMetered.
+    private CalculationResult kilowattHour(double value) {
         double kWh = (1.0 / 3600) * value;
-        String stringValue = "{\"results\":{\"energy\":" + String.format("%.3f", kWh) + ",\"units\":\"kWh\"}}\n";
-        return stringValue;
+        // {"results":{"energy":307.668,"units":"kWh"}}
+        // String stringValue = "{\"results\":{\"energy\":" + String.format("%.3f", kWh)
+        // + ",\"units\":\"kWh\"}}\n";
+        // return stringValue;
+        return new CalculationResult(kWh, "kWh");
     }
 
     /*
-     * private CalculationResult joules(double value) {
-     * // Place conversion here
-     * return
-     * }
+     * private CalculationResult joules(double value) { // Place conversion here
+     * return }
      * 
-     * private CalculationResult wattHour(double value) {
-     * // Place conversion here
-     * // (5.0 / 18) * value 
-     * return
-     * }
+     * private CalculationResult wattHour(double value) { // Place conversion here
+     * // (5.0 / 18) * value return }
      * 
-     * private CalculationResult electronVolt(double value) {
-     * // Place conversion here 
-     * return
-     * }
+     * private CalculationResult electronVolt(double value) { // Place conversion
+     * here return }
      */
 }
