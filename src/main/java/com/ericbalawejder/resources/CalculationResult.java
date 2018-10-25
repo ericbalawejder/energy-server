@@ -19,7 +19,6 @@ public class CalculationResult {
 
     @JsonProperty
     public Double getEnergy() {
-        // round?
         return energy;
     }
 
