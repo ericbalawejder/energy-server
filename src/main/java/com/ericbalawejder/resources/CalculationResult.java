@@ -13,7 +13,7 @@ public class CalculationResult {
 
     // TODO Alternative for Math.round()
     public CalculationResult(Double energy, String units) {
-        this.energy = Math.round(energy * 1000) / 1000.0d;
+        this.energy = energy;
         this.units = units;
     }
 

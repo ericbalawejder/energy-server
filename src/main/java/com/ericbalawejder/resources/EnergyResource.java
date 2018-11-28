@@ -2,6 +2,8 @@ package com.ericbalawejder.resources;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Optional;
 
 import javax.ws.rs.FormParam;
@@ -87,9 +89,19 @@ public class EnergyResource {
     // TODO Make parameter for units in energyMetered.
     private CalculationResult kilowattHour(double value) {
         double kWh = (1.0 / 3600) * value;
-        return new CalculationResult(kWh, "kWh");
+        return new CalculationResult(round(kWh, 3), "kWh");
     }
 
+    private static double round(double value, int places) {
+        if (places < 0) {
+            throw new IllegalArgumentException();
+        }
+     
+        BigDecimal bigdecimal = new BigDecimal(Double.toString(value));
+        bigdecimal = bigdecimal.setScale(places, RoundingMode.HALF_UP);
+        return bigdecimal.doubleValue();
+    }
+    
     /*
      private CalculationResult joules(double value) {
          double joules = Place conversion here
