@@ -1,16 +1,8 @@
-# Eclipse
-.classpath
-.project
-.settings/
- 
-# Intellij
-.idea/
+# IntelliJ
+.idea
 *.iml
-*.iws
- 
-# Mac
-.DS_Store
- 
-# Maven
-log/
-target/
+*.ipr
+
+### Gradle ###
+.gradle
+build/

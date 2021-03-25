@@ -1,0 +1,61 @@
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:5.2.0'
+    }
+}
+
+plugins {
+    id 'application'
+    id "com.github.johnrengelman.shadow" version "5.2.0"
+}
+
+group 'com.server.energy'
+version '0.0.1-SNAPSHOT'
+
+sourceCompatibility = 11
+targetCompatibility = 11
+
+project.ext {
+    junitVersion = '5.7.0'
+    assertJVersion = '3.19.0'
+    mockitoVersion = '3.8.0'
+    dropWizardVersion = '2.0.20'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: junitVersion
+    testRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: junitVersion
+    testImplementation group: 'org.assertj', name: 'assertj-core', version: assertJVersion
+    testImplementation group: 'org.mockito', name: 'mockito-core', version: mockitoVersion
+    implementation group: 'io.dropwizard', name: 'dropwizard-core', version: dropWizardVersion
+}
+
+mainClassName = "com.server.energy.configuration.EnergyServerApplication"
+
+shadowJar {
+    mergeServiceFiles()
+    exclude 'META-INF/*.DSA'
+    exclude 'META-INF/*.RSA'
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        exceptionFormat = 'short'
+        showStandardStreams = true
+        events = ["passed", "failed", "skipped"]
+    }
+}
+
+run {
+    args 'server'
+}
