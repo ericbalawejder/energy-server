@@ -1,6 +1,6 @@
 # Energy-Server
 
-A server that shows the total amount of energy metered by a system for a given timeframe.  
+A server that shows the total amount of energy metered by an Arduino battery analyzer.
 A series of sensor data values (time in seconds, voltage in volts, and current in amps) are
 located in the file "sensors.json". The server responds with an approximate value
 for kWh measured over the given time interval. The server is built from 
